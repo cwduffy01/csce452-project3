@@ -1,0 +1,26 @@
+[0.886s] Invoking command in '/home/cwduffy01/school/csce452/project3/ros2_ws/src/project3': PYTHONPATH=/home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/prefix_override:/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} WSLENV=ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/build install --record /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/install.log --single-version-externally-managed
+[1.140s] running egg_info
+[1.141s] writing ../../build/project3/project3.egg-info/PKG-INFO
+[1.141s] writing dependency_links to ../../build/project3/project3.egg-info/dependency_links.txt
+[1.141s] writing entry points to ../../build/project3/project3.egg-info/entry_points.txt
+[1.141s] writing requirements to ../../build/project3/project3.egg-info/requires.txt
+[1.141s] writing top-level names to ../../build/project3/project3.egg-info/top_level.txt
+[1.144s] reading manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.151s] writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.151s] running build
+[1.151s] running build_py
+[1.151s] copying project3/track.py -> /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/build/lib/project3
+[1.151s] running install
+[1.152s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.152s]   warnings.warn(
+[1.152s] running install_lib
+[1.153s] copying /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/build/lib/project3/track.py -> /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3
+[1.154s] byte-compiling /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/track.py to track.cpython-310.pyc
+[1.154s] running install_data
+[1.155s] running install_egg_info
+[1.157s] removing '/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info' (and everything under it)
+[1.158s] Copying ../../build/project3/project3.egg-info to /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info
+[1.160s] running install_scripts
+[1.183s] Installing track script to /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/project3
+[1.183s] writing list of installed files to '/home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/install.log'
+[1.216s] Invoked command in '/home/cwduffy01/school/csce452/project3/ros2_ws/src/project3' returned '0': PYTHONPATH=/home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/prefix_override:/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} WSLENV=ELECTRON_RUN_AS_NODE/w:WT_SESSION::WT_PROFILE_ID /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/build install --record /home/cwduffy01/school/csce452/project3/ros2_ws/build/project3/install.log --single-version-externally-managed
