@@ -5,8 +5,8 @@ from rclpy.node import Node
 import numpy as np
 # import opencv as cv2
 
-from sensor_msgs.msg import LaserScan 
-from geometry_msgs.msg import PointCloud, Point32
+from sensor_msgs.msg import LaserScan, PointCloud
+from geometry_msgs.msg import Point32
 
 
 class Track(Node):
@@ -14,15 +14,18 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
+        self.publisher_ = self.create_publisher(PointCloud, '/tracking', 10)
 
     def bag_callback(self, msg):
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
         angles = (np.arange(0, len(msg.ranges)) * msg.angle_increment) + msg.angle_min  # angles corresponding to each range
 
         # trig to convert ranges and angles to x and y coords
-        x_values = np.cos(angles) * ranges
-        y_values = np.sin(angles) * ranges
-        z_values = np.zeros(len(x_values))
+        # x_values = np.cos(angles) * ranges
+        # y_values = np.sin(angles) * ranges
+        x_values = np.ones(len(angles))
+        y_values = np.ones(len(angles))
+        z_values = np.zeros(len(angles))
 
         pc = PointCloud()
         pc.points = []
@@ -33,8 +36,12 @@ class Track(Node):
             p.y = y_values[i]
             p.z = z_values[i]
             pc.points.append(p)
+
+        self.publisher_.publish(pc)
         
         print("message received")
+
+
 
 def main(args=None):
     print("Hello from track.py")
