@@ -3,10 +3,14 @@ from rclpy.node import Node
 
 # rosdep install -i --from-path src --ignore-src -r -y --rosdistro humble
 import numpy as np
+import matplotlib.pyplot as plt
+
 # import opencv as cv2
 
 from sensor_msgs.msg import LaserScan, PointCloud
 from geometry_msgs.msg import Point32
+from std_msgs.msg import *
+from builtin_interfaces.msg import *
 
 
 class Track(Node):
@@ -14,17 +18,15 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.publisher_ = self.create_publisher(PointCloud, '/tracking', 10)
+        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)
 
     def bag_callback(self, msg):
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
         angles = (np.arange(0, len(msg.ranges)) * msg.angle_increment) + msg.angle_min  # angles corresponding to each range
 
         # trig to convert ranges and angles to x and y coords
-        # x_values = np.cos(angles) * ranges
-        # y_values = np.sin(angles) * ranges
-        x_values = np.ones(len(angles))
-        y_values = np.ones(len(angles))
+        x_values = np.cos(angles) * ranges
+        y_values = np.sin(angles) * ranges
         z_values = np.zeros(len(angles))
 
         pc = PointCloud()
@@ -36,6 +38,8 @@ class Track(Node):
             p.y = y_values[i]
             p.z = z_values[i]
             pc.points.append(p)
+
+        pc.header = msg.header
 
         self.publisher_.publish(pc)
         
