@@ -82,13 +82,17 @@ class Track(Node):
         if self.frame == 0:
             self.background = pts
         
-        # backgound is the average of first 5 frames (might need to increase if the data is iffy)
-        if self.frame < 10:
-            self.background = (self.background * self.frame + pts) / (self.frame + 1)
+        # backgound is the min of first 5 frames (might need to increase if the data is iffy)
+        if self.frame < 5:
+            # self.background = (self.background * self.frame + pts) / (self.frame + 1)
+            for i, row in enumerate(self.background):
+                if np.sum(self.background[i]) > np.sum(pts[i]):
+                    self.background[i] = pts[i]
+            
 
         # subtract background
         separated = pts - self.background
-        separated = np.where(separated < -2, separated, 0) # replace everything over threshold with 0
+        separated = np.where(separated < -0.5, separated, 0) # replace everything over threshold with 0
         possible_people_points = []
 
         # if a row is not 0, add to possible people points
@@ -98,13 +102,13 @@ class Track(Node):
                     
         print(possible_people_points)
 
-        print('[')
-        for row in pts:
-            print(f'[{row[0,0]}, {row[0,1]}],')
-        print(']')
+        # print('[')
+        # for row in possible_people_points:
+        #     print(f'[{row[0,0]}, {row[0,1]}],')
+        # print(']')
 
-        if self.frame == 50:
-            exit()
+        # if self.frame == 20:
+        #     exit()
 
         # convert to point could and publish to people_points
         people_pc = PointCloud()
