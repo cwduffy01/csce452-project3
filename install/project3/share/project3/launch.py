@@ -10,7 +10,7 @@ def generate_launch_description():
     #             executable='turtlesim_node')
 
     bag_loc_value = LaunchConfiguration('bag_loc')
-    bag_loc_arg = DeclareLaunchArgument('bag_loc', default_value="bags/exaple1/")
+    bag_loc_arg = DeclareLaunchArgument('bag_loc', default_value="bags/example1/")
 
     ep = ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_loc_value])
     track_node = Node(package='project3', executable='track')
