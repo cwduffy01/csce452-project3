@@ -1,18 +1,19 @@
 import rclpy
 from rclpy.node import Node
 
-# rosdep install -i --from-path src --ignore-src -r -y --rosdistro humble
-# . install/setup.bash
-# colcon build --packages-select project3
-# ros2 run project3 track
 import numpy as np
-import cv2
-import matplotlib.pyplot as plt
 
 from sensor_msgs.msg import LaserScan, PointCloud
 from geometry_msgs.msg import Point32
 from std_msgs.msg import *
 from builtin_interfaces.msg import *
+
+# rosdep install -i --from-path src --ignore-src -r -y --rosdistro humble
+# . install/setup.bash
+# colcon build --packages-select project3
+# ros2 run project3 track
+
+# ros2 launch project3 launch.py bag_loc:=bags/example7
 
 np.set_printoptions(threshold=np.inf)
 
@@ -130,14 +131,10 @@ def main(args=None):
     print("Hello from track.py")
 
     rclpy.init(args=args)
-
     tracking = Track()
 
     rclpy.spin(tracking)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     tracking.destroy_node()
     rclpy.shutdown()
 

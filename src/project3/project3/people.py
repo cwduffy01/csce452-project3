@@ -44,3 +44,16 @@ class People(Node):
             # if no cluster near person, remove them from list
             # if cluster far from all other people, create new person
     
+def main(args=None):
+    print("Hello from people.py")
+
+    rclpy.init(args=args)
+    people = People()
+
+    rclpy.spin(people)
+
+    people.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__init__":
+    main()
