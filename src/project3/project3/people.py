@@ -30,12 +30,16 @@ class People(Node):
 
     def __init__(self):
         super().__init__('people')
-        self.points = self.create_subscription(LaserScan, '/people_points', self.callback, 10)
+        # inputs
+        self.points = self.create_subscription(PointCloud, '/people_points', self.callback, 10)
+        # outputs
         self.person_locations = self.create_publisher(PointCloud, '/person_locations', 10)
         self.people_count_current = self.create_publisher(Int64, '/people_count_current', 10)
         self.people_count_total = self.create_publisher(Int64, '/people_count_total', 10)
 
     def callback(self, msg):
+        clusters = self.jump_cluster(msg)
+        print(clusters)
         # create bounding boxes around points and count how many other points lay within boundary (set boundary)
         # if number of points in box > threshold, consider cluster
         # loop through people and check their centers against cluster
@@ -44,6 +48,31 @@ class People(Node):
             # if no cluster near person, remove them from list
             # if cluster far from all other people, create new person
     
+    def jump_cluster(self, pc):
+        blobs = []
+        current_blob = []
+        base_point = pc.points[0]
+        max_delta = 0.25
+        for i, point in enumerate(pc.points):
+            x = point.x
+            y = point.y
+            distance = math.sqrt((x - base_point.x)**2 + (y - base_point.y)**2)
+            
+            if (distance > max_delta):
+                print()
+                print(f"({x}, {y})", end=",")
+                if len(current_blob) > 0:
+                    blobs.append(current_blob)
+                    current_blob = []
+                    current_blob.append(point)
+                base_point = point
+            else:
+                print(f"({x}, {y})", end=",")
+                base_point.x = (base_point.x + x)/2
+                base_point.y = (base_point.y + y)/2
+                current_blob.append(point)
+        return blobs
+
 def main(args=None):
     print("Hello from people.py")
 

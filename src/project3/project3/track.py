@@ -28,7 +28,6 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)
         self.people_points = self.create_publisher(PointCloud, '/people_points', 10)
 
     def bag_callback(self, msg):
@@ -43,24 +42,11 @@ class Track(Node):
         y_values = np.sin(angles) * ranges
         z_values = np.zeros(len(angles))
 
-        # push transformed points to publisher_ point cloud (for testing)
-        pc = PointCloud()
-        pc.points = []
-        # keep put points into an array
+        # put points into an array
         pts = []
-
         for i in range(len(x_values)):
-            p = Point32()
-            p.x = x_values[i]
-            p.y = y_values[i]
-            p.z = z_values[i]
-            pc.points.append(p)
-
             pts.append([x_values[i], y_values[i]])
 
-        pc.header = msg.header
-        self.publisher_.publish(pc)
-        
         # convert points to matrix
         pts = np.matrix(pts)
         # replace inf with 100 so theres no funny business with math
