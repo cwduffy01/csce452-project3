@@ -91,12 +91,22 @@ class Track(Node):
         separated = np.where(separated < -2, separated, 0) # replace everything over threshold with 0
         possible_people_points = []
 
+        # if a row is not 0, add to possible people points
         for i, row in enumerate(separated):
             if np.any(row != 0):
                 possible_people_points.append(pts[i])
                     
         print(possible_people_points)
 
+        print('[')
+        for row in pts:
+            print(f'[{row[0,0]}, {row[0,1]}],')
+        print(']')
+
+        if self.frame == 50:
+            exit()
+
+        # convert to point could and publish to people_points
         people_pc = PointCloud()
         people_pc.points = []
         for i, pt in enumerate(possible_people_points):

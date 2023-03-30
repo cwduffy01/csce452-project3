@@ -98,6 +98,14 @@ class Track(Node):
                     
         print(possible_people_points)
 
+        # print('[')
+        # for row in pts:
+        #     print(f'[{row[0,0]}, {row[0,1]}],')
+        # print(']')
+
+        # if self.frame == 50:
+        #     exit()
+
         # convert to point could and publish to people_points
         people_pc = PointCloud()
         people_pc.points = []
