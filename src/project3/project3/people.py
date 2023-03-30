@@ -9,6 +9,7 @@ import numpy as np
 
 from sensor_msgs.msg import LaserScan, PointCloud
 from geometry_msgs.msg import Point32
+from example_msgs.msg import Int64
 from std_msgs.msg import *
 from builtin_interfaces.msg import *
 
@@ -30,8 +31,9 @@ class People(Node):
     def __init__(self):
         super().__init__('people')
         self.points = self.create_subscription(LaserScan, '/people_points', self.callback, 10)
-        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)
-        self.people_points = self.create_publisher(PointCloud, '/people_points', 10)
+        self.person_locations = self.create_publisher(PointCloud, '/person_locations', 10)
+        self.people_count_current = self.create_publisher(Int64, '/people_count_current', 10)
+        self.people_count_total = self.create_publisher(Int64, '/people_count_total', 10)
 
     def callback(self, msg):
         # create bounding boxes around points and count how many other points lay within boundary (set boundary)
