@@ -6,17 +6,21 @@ from launch.event_handlers import *
 from launch.events import *
 
 def generate_launch_description():
-    # initialize command line argument
-    bag_loc_value = LaunchConfiguration('bag_loc')
-    bag_loc_arg = DeclareLaunchArgument('bag_loc', default_value="bags/example1/")
+    # initialize command line arguments
+    bag_in_value = LaunchConfiguration('bag_in')
+    bag_in_arg = DeclareLaunchArgument('bag_in', default_value="bags/example1/")
 
-    ep = ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_loc_value])     # command for playing bag file (with argument)
+    bag_out_value = LaunchConfiguration('bag_out')
+    bag_out_arg = DeclareLaunchArgument('bag_out', default_value="output/")
+
+    bag_play = ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_in_value])     # command for playing bag file (with argument)
+    bag_record = ExecuteProcess(cmd=['ros2', 'bag', 'record', "-a", "-o", bag_out_value ])   # command for recording bag file (with argument)
     track_node = Node(package='project3', executable='track')   # node for tracking people
 
     # handle terminating
-    event_handler = OnProcessExit(target_action=ep, on_exit=[EmitEvent(event=Shutdown())])
+    event_handler = OnProcessExit(target_action=bag_play, on_exit=[EmitEvent(event=Shutdown())])
     terminate_at_end = RegisterEventHandler(event_handler)
 
     # generate launch description and return
-    ld = LaunchDescription([ bag_loc_arg, ep, track_node, terminate_at_end ])
+    ld = LaunchDescription([ bag_in_arg, bag_out_arg, bag_play, bag_record, track_node, terminate_at_end ])
     return ld
