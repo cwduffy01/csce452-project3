@@ -18,7 +18,7 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)
+        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)    # topic for person center points
 
     def bag_callback(self, msg):
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
@@ -29,9 +29,14 @@ class Track(Node):
         y_values = np.sin(angles) * ranges
         z_values = np.zeros(len(angles))
 
+        # TODO: CLUSTER POINTS INTO BLOBS
+
+        # intialize PointCloud message
         pc = PointCloud()
         pc.points = []
+        pc.header = msg.header
 
+        # add all points to the PointCloud
         for i in range(len(x_values)):
             p = Point32()
             p.x = x_values[i]
@@ -39,12 +44,7 @@ class Track(Node):
             p.z = z_values[i]
             pc.points.append(p)
 
-        pc.header = msg.header
-
-        self.publisher_.publish(pc)
-        
-        print("message received")
-
+        self.publisher_.publish(pc)     # publish message to /person_locations node
 
 
 def main(args=None):
