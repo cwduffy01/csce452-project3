@@ -31,9 +31,6 @@ class Track(Node):
         self.people_points = self.create_publisher(PointCloud, '/people_points', 10)
 
     def bag_callback(self, msg):
-
-        print('frame', self.frame)
-
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
         angles = (np.arange(0, len(msg.ranges)) * msg.angle_increment) + msg.angle_min  # angles corresponding to each range
 
@@ -108,7 +105,6 @@ class Track(Node):
             people_pc.points.append(p)
 
         people_pc.header = msg.header
-        print(people_pc)
         self.people_points.publish(people_pc)
 
         self.frame += 1
