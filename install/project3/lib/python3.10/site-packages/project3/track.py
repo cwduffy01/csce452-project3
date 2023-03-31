@@ -1,18 +1,19 @@
 import rclpy
 from rclpy.node import Node
 
-# rosdep install -i --from-path src --ignore-src -r -y --rosdistro humble
-# . install/setup.bash
-# colcon build --packages-select project3
-# ros2 run project3 track
 import numpy as np
-import cv2
-import matplotlib.pyplot as plt
 
 from sensor_msgs.msg import LaserScan, PointCloud
 from geometry_msgs.msg import Point32
 from std_msgs.msg import *
 from builtin_interfaces.msg import *
+
+# rosdep install -i --from-path src --ignore-src -r -y --rosdistro humble
+# . install/setup.bash
+# colcon build --packages-select project3
+# ros2 run project3 track
+
+# ros2 launch project3 launch.py bag_loc:=bags/example7
 
 np.set_printoptions(threshold=np.inf)
 
@@ -27,7 +28,6 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.publisher_ = self.create_publisher(PointCloud, '/person_locations', 10)
         self.people_points = self.create_publisher(PointCloud, '/people_points', 10)
 
     def bag_callback(self, msg):
@@ -42,24 +42,11 @@ class Track(Node):
         y_values = np.sin(angles) * ranges
         z_values = np.zeros(len(angles))
 
-        # push transformed points to publisher_ point cloud (for testing)
-        pc = PointCloud()
-        pc.points = []
-        # keep put points into an array
+        # put points into an array
         pts = []
-
         for i in range(len(x_values)):
-            p = Point32()
-            p.x = x_values[i]
-            p.y = y_values[i]
-            p.z = z_values[i]
-            pc.points.append(p)
-
             pts.append([x_values[i], y_values[i]])
 
-        pc.header = msg.header
-        self.publisher_.publish(pc)
-        
         # convert points to matrix
         pts = np.matrix(pts)
         # replace inf with 100 so theres no funny business with math
@@ -100,15 +87,15 @@ class Track(Node):
             if np.any(row != 0):
                 possible_people_points.append(pts[i])
                     
-        print(possible_people_points)
+        # print(possible_people_points)
 
-        print('[')
-        for row in possible_people_points:
-            print(f'[{row[0,0]}, {row[0,1]}],')
-        print(']')
+        # print('[')
+        # for row in possible_people_points:
+        #     print(f'[{row[0,0]}, {row[0,1]}],')
+        # print(']')
 
-        if self.frame == 20:
-            exit()
+        # if self.frame == 20:
+        #     exit()
 
         # convert to point could and publish to people_points
         people_pc = PointCloud()
@@ -121,6 +108,7 @@ class Track(Node):
             people_pc.points.append(p)
 
         people_pc.header = msg.header
+        print(people_pc)
         self.people_points.publish(people_pc)
 
         self.frame += 1
@@ -130,14 +118,10 @@ def main(args=None):
     print("Hello from track.py")
 
     rclpy.init(args=args)
-
     tracking = Track()
 
     rclpy.spin(tracking)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     tracking.destroy_node()
     rclpy.shutdown()
 

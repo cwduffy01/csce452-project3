@@ -23,7 +23,7 @@ setup(
     entry_points={
         'console_scripts': [
             "track = project3.track:main",
-            "people = project3.people.main"
+            "people = project3.people:main"
         ],
     },
 )
