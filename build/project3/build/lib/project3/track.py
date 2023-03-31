@@ -94,7 +94,7 @@ class Track(Node):
         
 
 def main(args=None):
-    # print("Hello from track.py")
+    print("Hello from track.py")
 
     rclpy.init(args=args)
     tracking = Track()
