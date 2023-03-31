@@ -1,4 +1,4 @@
 *
 
 !.gitignore
-!/src/project3/project3/*
+!src/project3/project3/*
