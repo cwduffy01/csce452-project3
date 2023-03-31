@@ -14,12 +14,50 @@ from example_interfaces.msg import Int64
 from std_msgs.msg import *
 from builtin_interfaces.msg import *
 
-class person:
-    center = []
-    id = 0
+class Person:
+    pos = []
+    prev = []
+    count = 0
+    active = True
+    count_absent = 0
 
-    def __init__(self, points):
-        self.points = points
+    def __init__(self, pos):
+        self.pos = pos
+        self.prev = pos
+
+    def check_points(self, points):
+        threshold = 0.4
+        min_index = None
+        min_distance = 10000
+        for i, point in enumerate(points):
+            dist = math.sqrt((point[0] - self.pos[0])**2 + (point[1] - self.pos[1])**2)
+            if dist > threshold:
+                continue
+
+            if dist < min_distance:
+                min_index = i
+                min_distance = dist
+        # print('distance:',min_distance)
+
+        if min_index is not None:
+            self.prev = self.pos
+            self.pos = points[min_index]
+            points.pop(min_index)
+            self.count += 1
+            self.count_absent = 0
+            return True
+
+        self.count_absent += 1
+        prev_copy = self.prev
+        self.prev = self.pos
+        self.pos[0] += self.pos[0] - prev_copy[0]
+        self.pos[1] += self.pos[1] - prev_copy[1]
+        if self.count_absent > 7:
+            self.active = False
+        return False
+
+            
+
 
 class People(Node):
 
@@ -66,6 +104,30 @@ class People(Node):
 
         people_pc.header = msg.header
         self.person_locations.publish(people_pc)
+
+        current_people_int = Int64
+        current_people_int.data = len(centers)
+        # self.people_count_current.publish(current_people_int)
+
+        print('current:', len(centers))
+
+        total_people = 0
+        for person in self.people:
+            if person.active:
+                person.check_points(centers)
+
+            if person.count > 10:
+                total_people += 1
+
+        for center in centers:
+            p = Person(center)
+            self.people.append(p)
+            print('new person')
+
+        total_people_int = Int64
+        total_people_int.data = total_people
+        # self.people_count_total.publish(total_people_int)
+        print('total:',total_people)
         
         # create bounding boxes around points and count how many other points lay within boundary (set boundary)
         # if number of points in box > threshold, consider cluster
