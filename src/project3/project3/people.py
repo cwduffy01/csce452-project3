@@ -15,43 +15,48 @@ from example_interfaces.msg import Int64
 # from builtin_interfaces.msg import *
 
 class Person:
-    pos = []
-    prev = []
-    count = 0
-    active = True
-    count_absent = 0
+    pos = [] # current position of the person
+    prev = [] # previous position of the person
+    count = 0 # number of frames on screen
+    active = True # if person is active
+    count_absent = 0 # consecutive frames off screen
 
     def __init__(self, pos):
         self.pos = pos
         self.prev = pos
 
     def check_points(self, points):
-        threshold = 0.35
-        min_index = None
-        min_distance = 10000
+        threshold = 0.35 # threshold that determines how close another cluster should be to be considered same person
+        min_index = None # index of closest point
+        min_distance = 10000 # distance to closest point
         for i, point in enumerate(points):
+            # calculate distance to each point and continue if greater than threshold
             dist = math.sqrt((point[0] - self.pos[0])**2 + (point[1] - self.pos[1])**2)
             if dist > threshold:
                 continue
 
+            # find the minimum distance and closest point
             if dist < min_distance:
                 min_index = i
                 min_distance = dist
 
+        # if there was a min index found (same person in new frame)
         if min_index is not None:
-            self.prev = self.pos.copy()
-            self.pos = points[min_index]
-            points.pop(min_index)
+            self.prev = self.pos.copy() # previous frame = current frame
+            self.pos = points[min_index] # current frame = new point
+            points.pop(min_index) # remove point so it doesnt get considered for another person
             self.count += 1
             self.count_absent = 0
             return self.pos
 
+        # if no point was found, increment absence and project point forward using previous point
         self.count_absent += 1
         prev_copy = self.prev.copy()
         self.prev = self.pos.copy()
         self.pos[0] += self.pos[0] - prev_copy[0]
         self.pos[1] += self.pos[1] - prev_copy[1]
 
+        # if inactive for 7 consecutive frames, set inactive
         if self.count_absent > 7:
             self.active = False
         return self.pos
@@ -64,7 +69,6 @@ class People(Node):
     boundary_size = 0.5 # distance away from a point to be considered in the same cluster
     person_threshold = 7 # number of points in cluster to be considered a person
 
-    people_counter = 0
     people = []
 
     def __init__(self):
@@ -80,11 +84,13 @@ class People(Node):
 
 
     def callback(self, msg):
+        # find clusters of points
         clusters = self.jump_cluster(msg)
 
+        # calculate centers of clusters
         centers = []
         for cluster in clusters:
-            if len(cluster) < 7: # change maybe (add to jump_cluster)
+            if len(cluster) < 7: # dont consider clusters smaller than 7 points
                 continue
             sumx = 0
             sumy = 0
@@ -94,6 +100,7 @@ class People(Node):
             center = [sumx / len(cluster), sumy / len(cluster)]
             centers.append(center)
 
+        # add centers to point cloud to be published to person_locations
         people_pc = PointCloud()
         people_pc.points = []
         for center in centers:
@@ -102,53 +109,33 @@ class People(Node):
             p.y = center[1]
             p.z = 0.0
             people_pc.points.append(p)
-
         people_pc.header = msg.header
         self.person_locations.publish(people_pc)
 
+        # publish current number of people with number of centers
         current_people_int = Int64()
         current_people_int.data = len(centers)
         self.people_count_current.publish(current_people_int)
 
-        # print('current:', len(centers))
-
+        # loop through people and try to assign them to a cluster on the screen
         total_people = 0
         for person in self.people:
             if person.active:
                 test = person.check_points(centers)
-
-                # print(test)
-                # test_pc = PointCloud()
-                # test_pc.points = []
-
-                # p = Point32()
-                # p.x = test[0]
-                # p.y = test[1]
-                # p.z = 0.0
-                # test_pc.points.append(p)
-
-                # test_pc.header = msg.header
-                # self.test_publish.publish(test_pc)
-
+            # if person has been on screen for 10 frames, theyre considered in total people
             if person.count > 10:
                 total_people += 1
 
+        # assign the remainder of the clusters to a new person
         for center in centers:
             p = Person(center)
             self.people.append(p)
 
+        # publish total number of people
         total_people_int = Int64()
         total_people_int.data = total_people
         self.people_count_total.publish(total_people_int)
-        # print('total:',total_people)
-        
-        # create bounding boxes around points and count how many other points lay within boundary (set boundary)
-        # if number of points in box > threshold, consider cluster
-        # loop through people and check their centers against cluster
-        # pick closest cluster to be same person (within some boundary)
-        # could also keep track of a movement vector to be more smart about it but could be overkill
-        # if no cluster near person, remove them from list
-        # if cluster far from all other people, create new person
+
     
     def jump_cluster(self, pc):
         
@@ -167,15 +154,12 @@ class People(Node):
             distance = math.sqrt((x - base_point.x)**2 + (y - base_point.y)**2)
             
             if (distance > max_delta):
-                # print()
-                # print(f"({x}, {y})", end=",")
                 if len(current_blob) > 0:
                     blobs.append(current_blob)
                     current_blob = []
                     current_blob.append(point)
                 base_point = point
             else:
-                # print(f"({x}, {y})", end=",")
                 base_point.x = (base_point.x + x)/2
                 base_point.y = (base_point.y + y)/2
                 current_blob.append(point)
