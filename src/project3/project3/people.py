@@ -72,7 +72,7 @@ class People(Node):
     def __init__(self):
         super().__init__('people')
         # inputs
-        self.points = self.create_subscription(PointCloud, '/people_points', self.callback, 10)
+        self.points = self.create_subscription(PointCloud, '/cartesian_points', self.callback, 10)
         # outputs
         self.person_locations = self.create_publisher(PointCloud, '/person_locations', 10)
         self.people_count_current = self.create_publisher(Int64, '/people_count_current', 10)

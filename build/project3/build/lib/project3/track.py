@@ -13,22 +13,16 @@ from builtin_interfaces.msg import *
 # colcon build --packages-select project3
 # ros2 run project3 track
 
-# ros2 launch project3 launch.py bag_loc:=bags/example7
-
-np.set_printoptions(threshold=np.inf)
-
 
 class Track(Node):
 
-    background = np.zeros(512)
-    frame = 0
-    threshold = 0.5
-    index_counts = {}
+    background = np.zeros(512) # background is initialized to 0
+    frame = 0 # frame count
 
     def __init__(self):
         super().__init__('tracking')
-        self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.people_points = self.create_publisher(PointCloud, '/cartesian_points', 10)
+        self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10) # used for reading bag file
+        self.people_points = self.create_publisher(PointCloud, '/cartesian_points', 10) # used to publish points for other node to read
 
     def bag_callback(self, msg):
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
@@ -66,9 +60,8 @@ class Track(Node):
         if self.frame == 0:
             self.background = pts
         
-        # backgound is the min of first 5 frames (might need to increase if the data is iffy)
+        # backgound is the min of first 5 frames (helps with sensor data being inconsistent)
         if self.frame < 5:
-            # self.background = (self.background * self.frame + pts) / (self.frame + 1)
             for i, row in enumerate(self.background):
                 if np.sum(self.background[i]) > np.sum(pts[i]):
                     self.background[i] = pts[i]
@@ -83,16 +76,6 @@ class Track(Node):
         for i, row in enumerate(separated):
             if np.any(row != 0):
                 possible_people_points.append(pts[i])
-                    
-        # print(possible_people_points)
-
-        # print('[')
-        # for row in possible_people_points:
-        #     print(f'[{row[0,0]}, {row[0,1]}],')
-        # print(']')
-
-        # if self.frame == 20:
-        #     exit()
 
         # convert to point cloud and publish to people_points
         people_pc = PointCloud()
