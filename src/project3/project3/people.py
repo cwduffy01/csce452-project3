@@ -137,27 +137,35 @@ class People(Node):
     
     def jump_cluster(self, pc):
         
+        # create the array to add the detected blobs
         blobs = []
         current_blob = []
+        
+        # max change in distance that points in a blob can have
         max_delta = 0.4
-
+        
         if len(pc.points) == 0:
             return []
-
+        
+        # sets an original point to compare everything to
         base_point = pc.points[0]
-
+        
+        # loops through all points in order and if a jump in distance between a point and the average point of 
+        # the blob being constructed occurs then it starts adding to a new blob
         for i, point in enumerate(pc.points):
             x = point.x
             y = point.y
             distance = math.sqrt((x - base_point.x)**2 + (y - base_point.y)**2)
             
             if (distance > max_delta):
+                # jump detected
                 if len(current_blob) > 0:
                     blobs.append(current_blob)
                     current_blob = []
                     current_blob.append(point)
                 base_point = point
             else:
+                # no jump detected
                 base_point.x = (base_point.x + x)/2
                 base_point.y = (base_point.y + y)/2
                 current_blob.append(point)
