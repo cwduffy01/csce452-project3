@@ -11,15 +11,53 @@ import math
 from sensor_msgs.msg import LaserScan, PointCloud
 from geometry_msgs.msg import Point32
 from example_interfaces.msg import Int64
-from std_msgs.msg import *
-from builtin_interfaces.msg import *
+# from std_msgs.msg import *
+# from builtin_interfaces.msg import *
 
-class person:
-    center = []
-    id = 0
+class Person:
+    pos = []
+    prev = []
+    count = 0
+    active = True
+    count_absent = 0
 
-    def __init__(self, points):
-        self.points = points
+    def __init__(self, pos):
+        self.pos = pos
+        self.prev = pos
+
+    def check_points(self, points):
+        threshold = 0.35
+        min_index = None
+        min_distance = 10000
+        for i, point in enumerate(points):
+            dist = math.sqrt((point[0] - self.pos[0])**2 + (point[1] - self.pos[1])**2)
+            if dist > threshold:
+                continue
+
+            if dist < min_distance:
+                min_index = i
+                min_distance = dist
+
+        if min_index is not None:
+            self.prev = self.pos.copy()
+            self.pos = points[min_index]
+            points.pop(min_index)
+            self.count += 1
+            self.count_absent = 0
+            return self.pos
+
+        self.count_absent += 1
+        prev_copy = self.prev.copy()
+        self.prev = self.pos.copy()
+        self.pos[0] += self.pos[0] - prev_copy[0]
+        self.pos[1] += self.pos[1] - prev_copy[1]
+
+        if self.count_absent > 7:
+            self.active = False
+        return self.pos
+
+            
+
 
 class People(Node):
 
@@ -32,16 +70,17 @@ class People(Node):
     def __init__(self):
         super().__init__('people')
         # inputs
-        self.points = self.create_subscription(PointCloud, '/people_points', self.callback, 10)
+        self.points = self.create_subscription(PointCloud, '/cartesian_points', self.callback, 10)
         # outputs
         self.person_locations = self.create_publisher(PointCloud, '/person_locations', 10)
         self.people_count_current = self.create_publisher(Int64, '/people_count_current', 10)
         self.people_count_total = self.create_publisher(Int64, '/people_count_total', 10)
 
+        # self.test_publish = self.create_publisher(PointCloud, '/test_publish', 10)
+
+
     def callback(self, msg):
         clusters = self.jump_cluster(msg)
-        if len(clusters) == 0 and len(msg.points) != 0:
-            print('uh oh')
 
         centers = []
         for cluster in clusters:
@@ -66,6 +105,42 @@ class People(Node):
 
         people_pc.header = msg.header
         self.person_locations.publish(people_pc)
+
+        current_people_int = Int64()
+        current_people_int.data = len(centers)
+        self.people_count_current.publish(current_people_int)
+
+        # print('current:', len(centers))
+
+        total_people = 0
+        for person in self.people:
+            if person.active:
+                test = person.check_points(centers)
+
+                # print(test)
+                # test_pc = PointCloud()
+                # test_pc.points = []
+
+                # p = Point32()
+                # p.x = test[0]
+                # p.y = test[1]
+                # p.z = 0.0
+                # test_pc.points.append(p)
+
+                # test_pc.header = msg.header
+                # self.test_publish.publish(test_pc)
+
+            if person.count > 10:
+                total_people += 1
+
+        for center in centers:
+            p = Person(center)
+            self.people.append(p)
+
+        total_people_int = Int64()
+        total_people_int.data = total_people
+        self.people_count_total.publish(total_people_int)
+        # print('total:',total_people)
         
         # create bounding boxes around points and count how many other points lay within boundary (set boundary)
         # if number of points in box > threshold, consider cluster

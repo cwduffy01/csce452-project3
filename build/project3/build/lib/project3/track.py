@@ -28,7 +28,7 @@ class Track(Node):
     def __init__(self):
         super().__init__('tracking')
         self.bag = self.create_subscription(LaserScan, '/scan', self.bag_callback, 10)
-        self.people_points = self.create_publisher(PointCloud, '/people_points', 10)
+        self.people_points = self.create_publisher(PointCloud, '/cartesian_points', 10)
 
     def bag_callback(self, msg):
         ranges = np.array(msg.ranges)   # numpy array of lidar ranges
@@ -94,7 +94,7 @@ class Track(Node):
         # if self.frame == 20:
         #     exit()
 
-        # convert to point could and publish to people_points
+        # convert to point cloud and publish to people_points
         people_pc = PointCloud()
         people_pc.points = []
         for i, pt in enumerate(possible_people_points):
@@ -111,7 +111,7 @@ class Track(Node):
         
 
 def main(args=None):
-    print("Hello from track.py")
+    # print("Hello from track.py")
 
     rclpy.init(args=args)
     tracking = Track()
