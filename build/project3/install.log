@@ -1,6 +1,8 @@
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/__init__.py
+/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/people.py
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/track.py
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/__pycache__/__init__.cpython-310.pyc
+/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/__pycache__/people.cpython-310.pyc
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3/__pycache__/track.cpython-310.pyc
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/share/ament_index/resource_index/packages/project3
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/share/project3/package.xml
@@ -12,4 +14,5 @@
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info/zip-safe
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info/PKG-INFO
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info/dependency_links.txt
+/home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/project3/people
 /home/cwduffy01/school/csce452/project3/ros2_ws/install/project3/lib/project3/track

@@ -22,7 +22,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "track = project3.track:main"
+            "track = project3.track:main",
+            "people = project3.people:main"
         ],
     },
 )

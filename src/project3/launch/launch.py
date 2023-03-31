@@ -16,11 +16,14 @@ def generate_launch_description():
     bag_play = ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_in_value])     # command for playing bag file (with argument)
     bag_record = ExecuteProcess(cmd=['ros2', 'bag', 'record', "-a", "-o", bag_out_value ])   # command for recording bag file (with argument)
     track_node = Node(package='project3', executable='track')   # node for tracking people
+    people_node = Node(package='project3', executable='people') # node for identifying people
 
     # handle terminating
     event_handler = OnProcessExit(target_action=bag_play, on_exit=[EmitEvent(event=Shutdown())])
     terminate_at_end = RegisterEventHandler(event_handler)
 
     # generate launch description and return
-    ld = LaunchDescription([ bag_in_arg, bag_out_arg, bag_play, bag_record, track_node, terminate_at_end ])
+    ld = LaunchDescription([ bag_in_arg, bag_out_arg, bag_play, bag_record, track_node, people_node, terminate_at_end ])
     return ld
+
+
