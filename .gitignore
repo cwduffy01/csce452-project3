@@ -1,5 +1,11 @@
 /*
-/*/
 
-!.gitignore
-!/src/project3/project3/
+!/src
+/src/*
+
+!/src/project3
+/src/project3/*
+
+!/src/project3/project3
+*.DS_Store
+*.gitignore
