@@ -1,7 +1,0 @@
-/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
-  warnings.warn(
-  File "/home/msappington11/ros2_ws/csce452-project3/install/project3/lib/python3.10/site-packages/project3/track.py", line 6
-    import python3-opencv as cv2
-                  ^
-SyntaxError: invalid syntax
-

@@ -1,4 +1,0 @@
-[console_scripts]
-people = project3.people:main
-track = project3.track:main
-
